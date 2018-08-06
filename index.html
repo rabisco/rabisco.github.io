@@ -31,20 +31,26 @@
 		var canvas = document.getElementById("the_canvas");
 		var context = canvas.getContext("2d");
 
+		var draw_style = "#888";
+		var draw_width = 3.0;
+
+		var clear_style = "#111";
+		var clear_width = 50.0;
+
 		var prevX = 0.0;
 		var prevY = 0.0;
 		var currX = 0.0;
 		var currY = 0.0;
+
 		var drawing = false;
 
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 
-		context.fillStyle = "#111"
+		context.fillStyle = clear_style;
 		context.fillRect(0, 0, canvas.width, canvas.height);
-
-		context.strokeStyle = "#888";
-		context.lineWidth = 3.0;
+		context.lineJoin = "round";
+		context.lineCap = "round";
 
 		canvas.addEventListener("mousemove", function (e) {
 			prevX = currX;
@@ -62,6 +68,14 @@
 		}, false);
 		canvas.addEventListener("mousedown", function (e) {
 			drawing = true;
+
+			if (e.button == 0) {
+				context.lineWidth = draw_width;
+				context.strokeStyle = draw_style;
+			} else {
+				context.lineWidth = clear_width;
+				context.strokeStyle = clear_style;
+			}
 		}, false);
 		canvas.addEventListener("mouseup", function (e) {
 			drawing = false;
