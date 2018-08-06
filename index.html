@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Sketcher</title>
+	<style>
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			margin: 0px;
+			border: 0px;
+			overflow: hidden;
+			display: block;
+			background-color: black;
+		}
+
+		canvas {
+			position: absolute;
+			background-color: black;
+			left: 0px;
+			top: 0px;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="the_canvas" width="800" height="600"></canvas>
+	<script>
+		var canvas = document.getElementById("the_canvas");
+		var context = canvas.getContext("2d");
+
+		var prevX = 0.0;
+		var prevY = 0.0;
+		var currX = 0.0;
+		var currY = 0.0;
+		var drawing = false;
+
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		context.fillStyle = "#111"
+		context.fillRect(0, 0, canvas.width, canvas.height);
+
+		context.strokeStyle = "#888";
+		context.lineWidth = 3.0;
+
+		canvas.addEventListener("mousemove", function (e) {
+			prevX = currX;
+			prevY = currY;
+			currX = e.clientX - canvas.offsetLeft;
+			currY = e.clientY - canvas.offsetTop;
+
+			if (drawing) {
+				context.beginPath();
+				context.moveTo(prevX, prevY);
+				context.lineTo(currX, currY);
+				context.stroke();
+				context.closePath();
+			}
+		}, false);
+		canvas.addEventListener("mousedown", function (e) {
+			drawing = true;
+		}, false);
+		canvas.addEventListener("mouseup", function (e) {
+			drawing = false;
+		}, false);
+		canvas.addEventListener("mouseout", function (e) {
+			drawing = false;
+		}, false);
+	</script>
+</body>
+
+</html>
