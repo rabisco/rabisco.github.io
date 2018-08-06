@@ -28,14 +28,16 @@
 <body>
 	<canvas id="the_canvas" width="800" height="600"></canvas>
 	<script>
-		var canvas = document.getElementById("the_canvas");
-		var context = canvas.getContext("2d");
+		const canvas = document.getElementById("the_canvas");
+		const context = canvas.getContext("2d");
 
-		var draw_style = "#888";
-		var draw_width = 3.0;
+		const draw_style = "#888";
+		const draw_width = 3.0;
 
-		var clear_style = "#111";
-		var clear_width = 50.0;
+		const clear_style = "#111";
+		const clear_width = 50.0;
+
+		var undo_buffer = null;
 
 		var prevX = 0.0;
 		var prevY = 0.0;
@@ -68,6 +70,7 @@
 		}, false);
 		canvas.addEventListener("mousedown", function (e) {
 			drawing = true;
+			undo_buffer = canvas.toDataURL();
 
 			if (e.button == 0) {
 				context.lineWidth = draw_width;
@@ -83,6 +86,18 @@
 		canvas.addEventListener("mouseout", function (e) {
 			drawing = false;
 		}, false);
+
+		document.onkeydown = function (e) {
+			if (e.keyCode == 90 && e.ctrlKey) {
+				var data = canvas.toDataURL();
+
+				var undo_image = new Image();
+				undo_image.src = undo_buffer;
+				undo_image.onload = function () { context.drawImage(undo_image, 0, 0); }
+
+				undo_buffer = data;
+			}
+		};
 	</script>
 </body>
 
