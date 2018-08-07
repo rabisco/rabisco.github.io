@@ -37,6 +37,8 @@
 		const clear_style = "#111";
 		const clear_width = 50.0;
 
+		const font_style = "#444";
+
 		var undo_buffer = null;
 
 		var prevX = 0.0;
@@ -45,6 +47,7 @@
 		var currY = 0.0;
 
 		var drawing = false;
+		var first_click = true;
 
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
@@ -53,6 +56,14 @@
 		context.fillRect(0, 0, canvas.width, canvas.height);
 		context.lineJoin = "round";
 		context.lineCap = "round";
+
+		context.font = "30px Arial";
+		context.textAlign = "center";
+		context.fillStyle = font_style;
+		context.fillText("left button: draw", canvas.width * 0.5, canvas.height * 0.5 - 40);
+		context.fillText("other buttons: eraser", canvas.width * 0.5, canvas.height * 0.5);
+		context.fillText("f5: clear", canvas.width * 0.5, canvas.height * 0.5 + 40);
+		context.fillStyle = clear_style;
 
 		canvas.addEventListener("mousemove", function (e) {
 			prevX = currX;
@@ -69,6 +80,10 @@
 			}
 		}, false);
 		canvas.addEventListener("mousedown", function (e) {
+			if (first_click) {
+				context.fillRect(0, 0, canvas.width, canvas.height);
+			}
+
 			drawing = true;
 			undo_buffer = canvas.toDataURL();
 
