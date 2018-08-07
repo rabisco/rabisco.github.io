@@ -82,6 +82,7 @@
 		canvas.addEventListener("mousedown", function (e) {
 			if (first_click) {
 				context.fillRect(0, 0, canvas.width, canvas.height);
+				first_click = false;
 			}
 
 			drawing = true;
