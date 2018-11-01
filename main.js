@@ -9,6 +9,9 @@ const erase_width = 50.0;
 
 const font_style = "#444";
 
+const undo_stack = [];
+var undo_index = -1;
+
 var undo_buffer = null;
 
 var prevX = 0.0;
@@ -89,6 +92,13 @@ function clear_screen_if_first_action() {
 		context.fillRect(0, 0, canvas.width, canvas.height);
 		is_first_action = false;
 	}
+}
+
+function add_undo_command(is_drawing, points) {
+	undo_stack.push({
+		is_drawing: is_drawing,
+		points: points,
+	});
 }
 
 const api = {
