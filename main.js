@@ -123,13 +123,14 @@ const api = {
 		this.clear();
 
 		context.fillStyle = font_style;
-		context.fillText("left mouse button: sketch", canvas.width * 0.5, canvas.height * 0.5 - 60);
-		context.fillText("other mouse buttons: eraser", canvas.width * 0.5, canvas.height * 0.5 - 20);
-		context.fillText("esc: clear", canvas.width * 0.5, canvas.height * 0.5 + 20);
-		context.fillText("ctrl+z: undo", canvas.width * 0.5, canvas.height * 0.5 + 60);
-		context.fillText("ctrl+shift+z: redo", canvas.width * 0.5, canvas.height * 0.5 + 100);
+		context.fillText("left mouse button: sketch", canvas.width * 0.5, canvas.height * 0.5 - 100);
+		context.fillText("other mouse buttons: eraser", canvas.width * 0.5, canvas.height * 0.5 - 60);
+		context.fillText("esc: clear", canvas.width * 0.5, canvas.height * 0.5 - 20);
+		context.fillText("ctrl+z: undo", canvas.width * 0.5, canvas.height * 0.5 + 20);
+		context.fillText("ctrl+shift+z: redo", canvas.width * 0.5, canvas.height * 0.5 + 60);
+		context.fillText(window.location.hostname + "#roomname: colaborate online", canvas.width * 0.5, canvas.height * 0.5 + 100);
 
-		context.fillText(extra_info, canvas.width * 0.5, canvas.height * 0.5 + 200);
+		context.fillText(extra_info, canvas.width * 0.5, canvas.height - 100);
 	}
 };
 
