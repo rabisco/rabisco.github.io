@@ -32,7 +32,7 @@ client.onStateChange = function (state) {
 	api.enabled = state == Photon.LoadBalancing.LoadBalancingClient.State.Joined
 
 	if (client.isInLobby()) {
-		client.joinRoom("my-custom-room", { createIfNotExists: true }, {});
+		client.joinRoom("my-custom-room2", { createIfNotExists: true }, {});
 	}
 }
 
