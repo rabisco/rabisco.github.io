@@ -5,7 +5,7 @@ const draw_style = "#888";
 const draw_width = 3.0;
 
 const erase_style = "#111";
-const erase_width = 50.0;
+const erase_width = 80.0;
 
 const font_style = "#444";
 
@@ -64,6 +64,7 @@ canvas.addEventListener("mouseout", function (e) {
 }, false);
 
 document.onkeydown = function (e) {
+	// Z
 	if (e.keyCode == 90 && e.ctrlKey) {
 		if (e.shiftKey) {
 			undo_api.request_undo(1);
@@ -81,22 +82,21 @@ function trace_line(x0, y0, x1, y1) {
 	context.closePath();
 }
 
-function clear_screen_if_first_action() {
-	if (is_first_action) {
-		context.fillStyle = erase_style;
-		context.fillRect(0, 0, canvas.width, canvas.height);
-		is_first_action = false;
-	}
-}
-
 const api = {
 	enabled: true,
+	clear: function () {
+		context.fillStyle = erase_style;
+		context.fillRect(0, 0, canvas.width, canvas.height);
+	},
 	draw: function (x0, y0, x1, y1) {
 		if (!this.enabled) {
 			return;
 		}
 
-		clear_screen_if_first_action();
+		if (is_first_action) {
+			this.clear();
+			is_first_action = false;
+		}
 
 		context.lineWidth = draw_width;
 		context.strokeStyle = draw_style;
@@ -107,8 +107,6 @@ const api = {
 			return;
 		}
 
-		clear_screen_if_first_action();
-
 		context.lineWidth = erase_width;
 		context.strokeStyle = erase_style;
 		trace_line(x0, y0, x1, y1);
@@ -116,8 +114,7 @@ const api = {
 	on_draw: function (x0, y0, x1, y1) { },
 	on_erase: function (x0, y0, x1, y1) { },
 	draw_background_info: function (extra_info) {
-		context.fillStyle = erase_style;
-		context.fillRect(0, 0, canvas.width, canvas.height);
+		this.clear();
 
 		context.fillStyle = font_style;
 		context.fillText("left mouse button: sketch", canvas.width * 0.5, canvas.height * 0.5 - 60);
