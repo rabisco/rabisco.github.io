@@ -55,11 +55,11 @@ canvas.addEventListener("mousedown", function (e) {
 }, false);
 canvas.addEventListener("mouseup", function (e) {
 	is_pressing_mouse = false;
-	undo_api.request_add_undo_command(api.local_user_id, is_drawing);
+	undo_api.request_add_undo_command(is_drawing);
 }, false);
 canvas.addEventListener("mouseout", function (e) {
 	if (is_pressing_mouse)
-		undo_api.request_add_undo_command(api.local_user_id, is_drawing);
+		undo_api.on_request_add_undo_command(is_drawing);
 	is_pressing_mouse = false;
 }, false);
 
@@ -91,7 +91,6 @@ function clear_screen_if_first_action() {
 
 const api = {
 	enabled: true,
-	local_user_id: 0,
 	draw: function (x0, y0, x1, y1) {
 		if (!this.enabled) {
 			return;

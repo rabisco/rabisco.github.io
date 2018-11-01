@@ -36,11 +36,14 @@ const undo_api = {
 	add_local_undo_line: function (x0, y0, x1, y1) {
 		local_undo_lines.push({ x0: x0, y0: y0, x1: x1, y1: y1 });
 	},
-	request_add_undo_command: function (user_id, is_drawing) {
-		this.perform_add_undo_command(user_id, is_drawing, local_undo_lines);
+	request_add_undo_command: function (is_drawing) {
+		this.on_request_add_undo_command(is_drawing, local_undo_lines);
 		local_undo_lines = [];
 	},
-	perform_add_undo_command: function (user_id, is_drawing, lines) {
+	on_request_add_undo_command: function (is_drawing, lines) {
+		this.perform_add_undo_command(is_drawing, lines);
+	},
+	perform_add_undo_command: function (is_drawing, lines) {
 		current_undo_index += 1;
 		undo_stack.splice(current_undo_index);
 
