@@ -41,7 +41,7 @@ canvas.addEventListener("mousemove", function (e) {
 			api.on_erase(prev_x, prev_y, curr_x, curr_y);
 		}
 
-		add_undo_line(prev_x, prev_y, curr_x, curr_y);
+		undo_api.add_undo_line(api.local_user_id, prev_x, prev_y, curr_x, curr_y);
 	}
 }, false);
 canvas.addEventListener("mousedown", function (e) {
@@ -55,11 +55,11 @@ canvas.addEventListener("mousedown", function (e) {
 }, false);
 canvas.addEventListener("mouseup", function (e) {
 	is_pressing_mouse = false;
-	api.finish_command();
+	undo_api.add_undo_command(api.local_user_id, is_drawing);
 }, false);
 canvas.addEventListener("mouseout", function (e) {
 	if (is_pressing_mouse)
-		api.finish_command();
+		undo_api.add_undo_command(api.local_user_id, is_drawing);
 	is_pressing_mouse = false;
 }, false);
 
@@ -91,6 +91,7 @@ function clear_screen_if_first_action() {
 
 const api = {
 	enabled: true,
+	local_user_id: 0,
 	draw: function (x0, y0, x1, y1) {
 		if (!this.enabled) {
 			return;
@@ -127,9 +128,6 @@ const api = {
 		context.fillText("ctrl+shift+z: redo", canvas.width * 0.5, canvas.height * 0.5 + 100);
 
 		context.fillText(extra_info, canvas.width * 0.5, canvas.height * 0.5 + 200);
-	},
-	finish_command: function () {
-		add_undo_command(is_drawing, current_undo_lines);
 	}
 };
 
