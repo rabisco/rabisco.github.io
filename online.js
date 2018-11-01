@@ -1,10 +1,10 @@
-const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionProtocol.Ws, "61cc61f4-c5a6-4d2b-afeb-2afeb42c3162", "1.0");
+const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionProtocol.Wss, "61cc61f4-c5a6-4d2b-afeb-2afeb42c3162", "1.0");
 
 const draw_event_code = 1;
 const erase_event_code = 2;
 
 api.enabled = false;
-api.draw_background_info("connection state: Offline");
+api.draw_background_info("connection state: Offline :D");
 
 api.on_draw = function (x0, y0, x1, y1) {
 	client.raiseEvent(draw_event_code, { x0: x0, y0: y0, x1: x1, y1: y1 });
@@ -40,3 +40,5 @@ client.onEvent = function (code, data, actor_nr) {
 			break;
 	}
 }
+
+console.log("ADASDAS");
