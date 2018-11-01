@@ -35,3 +35,22 @@ function draw_undo_state_at(index) {
 		}
 	}
 }
+
+const undo_api = {
+	request_undo: function (direction) {
+		this.perform_undo(direction);
+	},
+	perform_undo: function (direction) {
+		current_undo_index += direction;
+		if (current_undo_index < -1) {
+			current_undo_index = -1;
+			return;
+		}
+		if (current_undo_index > undo_stack.length - 1) {
+			current_undo_index = undo_stack.length - 1;
+			return;
+		}
+
+		draw_undo_state_at(current_undo_index);
+	}
+}

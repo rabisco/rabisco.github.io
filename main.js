@@ -66,9 +66,9 @@ canvas.addEventListener("mouseout", function (e) {
 document.onkeydown = function (e) {
 	if (e.keyCode == 90 && e.ctrlKey) {
 		if (e.shiftKey) {
-			api.redo();
+			undo_api.request_undo(1);
 		} else {
-			api.undo();
+			undo_api.request_undo(-1);
 		}
 	}
 };
@@ -130,18 +130,6 @@ const api = {
 	},
 	finish_command: function () {
 		add_undo_command(is_drawing, current_undo_lines);
-	},
-	undo: function () {
-		if (current_undo_index >= 0) {
-			current_undo_index -= 1;
-			draw_undo_state_at(current_undo_index);
-		}
-	},
-	redo: function () {
-		if (current_undo_index < undo_stack.length - 1) {
-			current_undo_index += 1;
-			draw_undo_state_at(current_undo_index);
-		}
 	}
 };
 
