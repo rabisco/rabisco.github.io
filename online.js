@@ -3,9 +3,6 @@ const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionPro
 const draw_event_code = 1;
 const erase_event_code = 2;
 
-api.enabled = false;
-api.draw_background_info("connection state: Offline 2");
-
 api.on_draw = function (x0, y0, x1, y1) {
 	client.raiseEvent(
 		draw_event_code,
@@ -22,7 +19,11 @@ api.on_erase = function (x0, y0, x1, y1) {
 	);
 }
 
-client.connectToRegionMaster("SA");
+if (window.location.hash.length > 1) {
+	api.enabled = false;
+	api.draw_background_info("connection state: Offline 2");
+	client.connectToRegionMaster("SA");
+}
 
 client.onStateChange = function (state) {
 	let status = "connection state: ";
@@ -32,7 +33,7 @@ client.onStateChange = function (state) {
 	api.enabled = state == Photon.LoadBalancing.LoadBalancingClient.State.Joined
 
 	if (client.isInLobby()) {
-		client.joinRoom("my-custom-room2", { createIfNotExists: true }, {});
+		client.joinRoom(window.location.hash, { createIfNotExists: true }, {});
 	}
 }
 
