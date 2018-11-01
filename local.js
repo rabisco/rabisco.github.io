@@ -23,19 +23,10 @@ var is_first_action = true;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-context.fillStyle = erase_style;
-context.fillRect(0, 0, canvas.width, canvas.height);
 context.lineJoin = "round";
 context.lineCap = "round";
-
 context.font = "30px Arial";
 context.textAlign = "center";
-context.fillStyle = font_style;
-context.fillText("left mouse button: sketch", canvas.width * 0.5, canvas.height * 0.5 - 60);
-context.fillText("other mouse buttons: eraser", canvas.width * 0.5, canvas.height * 0.5 - 20);
-context.fillText("f5: clear", canvas.width * 0.5, canvas.height * 0.5 + 20);
-context.fillText("ctrl+z: undo once", canvas.width * 0.5, canvas.height * 0.5 + 60);
-context.fillStyle = erase_style;
 
 canvas.addEventListener("mousemove", function (e) {
 	prevX = currX;
@@ -92,13 +83,19 @@ function trace_line(x0, y0, x1, y1) {
 
 function clear_screen_if_first_action() {
 	if (is_first_action) {
+		context.fillStyle = erase_style;
 		context.fillRect(0, 0, canvas.width, canvas.height);
 		is_first_action = false;
 	}
 }
 
 const api = {
+	enabled: true,
 	draw: function (x0, y0, x1, y1) {
+		if (!this.enabled) {
+			return;
+		}
+
 		clear_screen_if_first_action();
 
 		context.lineWidth = draw_width;
@@ -108,6 +105,10 @@ const api = {
 		this.on_draw();
 	},
 	erase: function (x0, y0, x1, y1) {
+		if (!this.enabled) {
+			return;
+		}
+
 		clear_screen_if_first_action();
 
 		context.lineWidth = erase_width;
@@ -116,6 +117,20 @@ const api = {
 
 		this.on_erase();
 	},
+	draw_background_info: function (extra_info) {
+		context.fillStyle = erase_style;
+		context.fillRect(0, 0, canvas.width, canvas.height);
+
+		context.fillStyle = font_style;
+		context.fillText("left mouse button: sketch", canvas.width * 0.5, canvas.height * 0.5 - 60);
+		context.fillText("other mouse buttons: eraser", canvas.width * 0.5, canvas.height * 0.5 - 20);
+		context.fillText("f5: clear", canvas.width * 0.5, canvas.height * 0.5 + 20);
+		context.fillText("ctrl+z: undo once", canvas.width * 0.5, canvas.height * 0.5 + 60);
+
+		context.fillText(extra_info, canvas.width * 0.5, canvas.height * 0.5 + 180);
+	},
 	on_draw: function () { },
 	on_erase: function () { },
 };
+
+api.draw_background_info("");
