@@ -20,6 +20,8 @@ api.on_erase = function (x0, y0, x1, y1) {
 }
 
 if (window.location.hash.length > 1) {
+	console.log("SUPER HASH");
+	
 	api.enabled = false;
 	api.draw_background_info("connection state: Offline 2");
 	client.connectToRegionMaster("SA");
