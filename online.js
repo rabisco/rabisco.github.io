@@ -1,9 +1,10 @@
 const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionProtocol.Wss, "61cc61f4-c5a6-4d2b-afeb-2afeb42c3162", "1.0");
 
-const event_code_draw = 1;
-const event_code_erase = 2;
-const event_code_perform_undo = 3;
-const event_code_add_undo_command = 4;
+const event_code_clear = 1;
+const event_code_draw = 2;
+const event_code_erase = 3;
+const event_code_perform_undo = 4;
+const event_code_add_undo_command = 5;
 
 client.onStateChange = function (state) {
 	let status = "connection state: ";
@@ -23,6 +24,9 @@ client.onStateChange = function (state) {
 
 client.onEvent = function (code, data, actor_nr) {
 	switch (code) {
+		case event_code_clear:
+			api.clear();
+			break;
 		case event_code_draw:
 			api.draw(data.x0, data.y0, data.x1, data.y1);
 			break;
@@ -44,6 +48,14 @@ if (window.location.hash.length > 1) {
 	api.enabled = false;
 	api.draw_background_info("connection state: Offline");
 	client.connectToRegionMaster("SA");
+
+	api.on_clear = function () {
+		client.raiseEvent(
+			event_code_clear,
+			null,
+			{ cache: Photon.LoadBalancing.Constants.EventCaching.AddToRoomCacheGlobal }
+		)
+	};
 
 	api.on_draw = function (x0, y0, x1, y1) {
 		client.raiseEvent(

@@ -76,6 +76,7 @@ document.onkeydown = function (e) {
 	// ESC
 	if (e.keyCode == 27) {
 		api.clear();
+		api.on_clear();
 		undo_api.request_add_undo_command(command_type_clear);
 	}
 };
@@ -117,6 +118,7 @@ const api = {
 		context.strokeStyle = erase_style;
 		trace_line(x0, y0, x1, y1);
 	},
+	on_clear: function () { },
 	on_draw: function (x0, y0, x1, y1) { },
 	on_erase: function (x0, y0, x1, y1) { },
 	draw_background_info: function (extra_info) {
