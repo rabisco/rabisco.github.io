@@ -160,8 +160,9 @@ const api = {
 		context.fillText("other mouse buttons: eraser", canvas.width * 0.5, canvas.height * 0.5 - 20);
 		context.fillText("f5: clear", canvas.width * 0.5, canvas.height * 0.5 + 20);
 		context.fillText("ctrl+z: undo", canvas.width * 0.5, canvas.height * 0.5 + 60);
+		context.fillText("ctrl+shift+z: redo", canvas.width * 0.5, canvas.height * 0.5 + 100);
 
-		context.fillText(extra_info, canvas.width * 0.5, canvas.height * 0.5 + 180);
+		context.fillText(extra_info, canvas.width * 0.5, canvas.height * 0.5 + 200);
 	},
 	finish_command: function () {
 		undo_stack.splice(current_undo_index + 1);
