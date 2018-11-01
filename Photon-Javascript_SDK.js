@@ -1612,7 +1612,7 @@ var Photon;
                 @returns {number} Number of actors.
             */
             LoadBalancingClient.prototype.myRoomActorCount = function () { return this.actorsArray.length; };
-            LoadBalancingClient.prototype.myRoomActorsArray = function () { return this.actorsArray; }; // actors 'at index' access support (Scirra/Costruct 2)                
+            LoadBalancingClient.prototype.myRoomActorsArray = function () { return this.actorsArray; }; // actors 'at index' access support (Scirra/Costruct 2)
             /**
                 @summary Actor number of the player who's the master of this Room. Note: This changes when the current master leaves the room.
                 @member Photon.LoadBalancing.RoomInfo#masterClientId
@@ -1861,7 +1861,7 @@ var Photon;
                 @property {string[]} [options.plugins] Expected server plugins.
                 @property {string} [options.lobbyName] Name of the lobby to create room in.
                 @property {Photon.LoadBalancing.Constants.LobbyType} [options.lobbyType=LobbyType.Default] Type of the lobby.
-    
+
             */
             LoadBalancingClient.prototype.createRoom = function (roomName, options) {
                 this.currentRoom = this.roomFactoryInternal(roomName ? roomName : "");
@@ -1887,7 +1887,7 @@ var Photon;
                 @property {string[]} [createOptions.plugins] Informs the server of the expected plugin setup.
                 @property {string} [createOptions.lobbyName=""] Name of the lobby to create room in.
                 @property {Photon.LoadBalancing.Constants.LobbyType} [createOptions.lobbyType=LobbyType.Default] Type of the lobby.
-    
+
             */
             LoadBalancingClient.prototype.joinRoom = function (roomName, options, createOptions) {
                 var op = [];
@@ -2142,7 +2142,7 @@ var Photon;
                 Alternatively, automated updates can be set up during {@link Photon.LoadBalancing.LoadBalancingClient#connect connect}.
                 @method Photon.LoadBalancing.LoadBalancingClient#requestLobbyStats
                 @param {any[]} lobbiesToRequest Array of lobbies id pairs [ [lobbyName1, lobbyType1], [lobbyName2, lobbyType2], ... ]. If not specified or null, statistics for all lobbies requested.
-    
+
             **/
             LoadBalancingClient.prototype.requestLobbyStats = function (lobbiesToRequest) {
                 if (this.isConnectedToMaster()) {
@@ -2973,7 +2973,7 @@ var Photon;
                 //            JoinOrejoin: 2,
                 RejoinOnly: 3
             };
-            // tsc looses all comments after first static member 
+            // tsc looses all comments after first static member
             // jsdoc reads comments from any place within class (and may be from any place in file)
             LoadBalancingClient.PeerErrorCode = {
                 /**
@@ -3356,7 +3356,7 @@ var Photon;
                 TargetActorNr: 253,
                 //
                 // Summary:
-                //     (236) A parameter indicating how long a room instance should be keeped alive in the 
+                //     (236) A parameter indicating how long a room instance should be keeped alive in the
                 //     room cache after all players left the room.
                 /// <summary>
                 EmptyRoomLiveTime: 236
@@ -3480,13 +3480,13 @@ var Photon;
                 GameDoesNotExist: 0x7FFF - 9,
                 /// <summary>(32757) Authorization on the Photon Cloud failed becaus the concurrent users (CCU) limit of the app's subscription is reached.</summary>
                 /// <remarks>
-                /// Unless you have a plan with "CCU Burst", clients might fail the authentication step during connect. 
-                /// Affected client are unable to call operations. Please note that players who end a game and return 
-                /// to the Master server will disconnect and re-connect, which means that they just played and are rejected 
+                /// Unless you have a plan with "CCU Burst", clients might fail the authentication step during connect.
+                /// Affected client are unable to call operations. Please note that players who end a game and return
+                /// to the Master server will disconnect and re-connect, which means that they just played and are rejected
                 /// in the next minute / re-connect.
                 /// This is a temporary measure. Once the CCU is below the limit, players will be able to connect an play again.
-                /// 
-                /// OpAuthorize is part of connection workflow but only on the Photon Cloud, this error can happen. 
+                ///
+                /// OpAuthorize is part of connection workflow but only on the Photon Cloud, this error can happen.
                 /// Self-hosted Photon servers with a CCU limited license won't let a client connect at all.
                 /// </remarks>
                 MaxCcuReached: 0x7FFF - 10,
@@ -3494,8 +3494,8 @@ var Photon;
                 /// <remarks>
                 /// Some subscription plans for the Photon Cloud are region-bound. Servers of other regions can't be used then.
                 /// Check your Master server address and compare it with your Photon Cloud Dashboard's info.
-                /// 
-                /// OpAuthorize is part of connection workflow but only on the Photon Cloud, this error can happen. 
+                ///
+                /// OpAuthorize is part of connection workflow but only on the Photon Cloud, this error can happen.
                 /// Self-hosted Photon servers with a CCU limited license won't let a client connect at all.
                 /// </remarks>
                 InvalidRegion: 0x7FFF - 11,
@@ -4095,7 +4095,7 @@ var Photon;
             /**
                 @classdesc Implements the Photon Chat API workflow.<br/>
                 This class should be extended to handle system or custom events and operation responses.<br/>
-                
+
                 @borrows Photon.LoadBalancing.LoadBalancingClient#setCustomAuthentication
                 @borrows Photon.LoadBalancing.LoadBalancingClient#connectToNameServer
                 @borrows Photon.LoadBalancing.LoadBalancingClient#getRegions
@@ -4103,7 +4103,7 @@ var Photon;
                 @borrows Photon.LoadBalancing.LoadBalancingClient#isConnectedToNameServer
                 @borrows Photon.LoadBalancing.LoadBalancingClient#disconnect
                 @borrows Photon.LoadBalancing.LoadBalancingClient#setLogLevel
-    
+
                 @constructor Photon.Chat.ChatClient
                 @param {Photon.ConnectionProtocol} protocol Connecton protocol.
                 @param {string} appId Cloud application ID.

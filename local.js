@@ -37,8 +37,10 @@ canvas.addEventListener("mousemove", function (e) {
 	if (is_pressing_mouse) {
 		if (is_drawing) {
 			api.draw(prevX, prevY, currX, currY);
+			api.on_draw(prevX, prevY, currX, currY);
 		} else {
 			api.erase(prevX, prevY, currX, currY);
+			api.on_erase(prevX, prevY, currX, currY);
 		}
 	}
 }, false);
@@ -101,8 +103,6 @@ const api = {
 		context.lineWidth = draw_width;
 		context.strokeStyle = draw_style;
 		trace_line(x0, y0, x1, y1);
-
-		this.on_draw(x0, y0, x1, y1);
 	},
 	erase: function (x0, y0, x1, y1) {
 		if (!this.enabled) {
@@ -114,8 +114,6 @@ const api = {
 		context.lineWidth = erase_width;
 		context.strokeStyle = erase_style;
 		trace_line(x0, y0, x1, y1);
-
-		this.on_erase(x0, y0, x1, y1);
 	},
 	draw_background_info: function (extra_info) {
 		context.fillStyle = erase_style;
