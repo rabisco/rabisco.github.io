@@ -4,7 +4,7 @@ const draw_event_code = 1;
 const erase_event_code = 2;
 
 api.enabled = false;
-api.draw_background_info("connection state: Offline");
+api.draw_background_info("connection state: Offline 2");
 
 api.on_draw = function (x0, y0, x1, y1) {
 	client.raiseEvent(
