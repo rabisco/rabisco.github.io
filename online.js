@@ -2,6 +2,7 @@ const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionPro
 
 const draw_event_code = 1;
 const erase_event_code = 2;
+const finish_event_code = 3;
 
 if (window.location.hash.length > 1) {
 	api.enabled = false;
@@ -28,6 +29,8 @@ client.onEvent = function (code, data, actor_nr) {
 			break;
 		case erase_event_code:
 			api.erase(data.x0, data.y0, data.x1, data.y1);
+			break;
+		case finish_event_code:
 			break;
 		default:
 			break;

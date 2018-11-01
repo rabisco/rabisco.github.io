@@ -10,18 +10,17 @@ const erase_width = 50.0;
 const font_style = "#444";
 
 const undo_stack = [];
-var undo_index = -1;
+let current_undo_index = -1;
+let current_undo_lines = [];
 
-var undo_buffer = null;
+let prev_x = 0.0;
+let prev_y = 0.0;
+let curr_x = 0.0;
+let curr_y = 0.0;
 
-var prevX = 0.0;
-var prevY = 0.0;
-var currX = 0.0;
-var currY = 0.0;
-
-var is_pressing_mouse = false;
-var is_drawing = false;
-var is_first_action = true;
+let is_pressing_mouse = false;
+let is_drawing = false;
+let is_first_action = true;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -32,24 +31,25 @@ context.font = "30px Arial";
 context.textAlign = "center";
 
 canvas.addEventListener("mousemove", function (e) {
-	prevX = currX;
-	prevY = currY;
-	currX = e.clientX - canvas.offsetLeft;
-	currY = e.clientY - canvas.offsetTop;
+	prev_x = curr_x;
+	prev_y = curr_y;
+	curr_x = e.clientX - canvas.offsetLeft;
+	curr_y = e.clientY - canvas.offsetTop;
 
 	if (is_pressing_mouse) {
 		if (is_drawing) {
-			api.draw(prevX, prevY, currX, currY);
-			api.on_draw(prevX, prevY, currX, currY);
+			api.draw(prev_x, prev_y, curr_x, curr_y);
+			api.on_draw(prev_x, prev_y, curr_x, curr_y);
 		} else {
-			api.erase(prevX, prevY, currX, currY);
-			api.on_erase(prevX, prevY, currX, currY);
+			api.erase(prev_x, prev_y, curr_x, curr_y);
+			api.on_erase(prev_x, prev_y, curr_x, curr_y);
 		}
+
+		add_undo_line(prev_x, prev_y, curr_x, curr_y);
 	}
 }, false);
 canvas.addEventListener("mousedown", function (e) {
 	is_pressing_mouse = true;
-	undo_buffer = canvas.toDataURL();
 
 	if (e.button == 0) {
 		is_drawing = true;
@@ -59,24 +59,19 @@ canvas.addEventListener("mousedown", function (e) {
 }, false);
 canvas.addEventListener("mouseup", function (e) {
 	is_pressing_mouse = false;
+	api.finish_command();
 }, false);
 canvas.addEventListener("mouseout", function (e) {
+	if (is_pressing_mouse)
+		api.finish_command();
 	is_pressing_mouse = false;
 }, false);
 
-/*
 document.onkeydown = function (e) {
 	if (e.keyCode == 90 && e.ctrlKey) {
-		var data = canvas.toDataURL();
-
-		var undo_image = new Image();
-		undo_image.src = undo_buffer;
-		undo_image.onload = function () { context.drawImage(undo_image, 0, 0); }
-
-		undo_buffer = data;
+		api.undo();
 	}
 };
-*/
 
 function trace_line(x0, y0, x1, y1) {
 	context.beginPath();
@@ -94,11 +89,20 @@ function clear_screen_if_first_action() {
 	}
 }
 
-function add_undo_command(is_drawing, points) {
+function add_undo_line(x0, y0, x1, y1) {
+	current_undo_lines.push({ x0: x0, y0: y0, x1: x1, y1: y1 });
+}
+
+function add_undo_command(is_drawing) {
 	undo_stack.push({
 		is_drawing: is_drawing,
-		points: points,
+		lines: current_undo_lines,
+		index: current_undo_index,
 	});
+	current_undo_index += 1;
+	current_undo_lines = [];
+
+	console.log("undo index:", current_undo_index);
 }
 
 const api = {
@@ -125,6 +129,8 @@ const api = {
 		context.strokeStyle = erase_style;
 		trace_line(x0, y0, x1, y1);
 	},
+	on_draw: function (x0, y0, x1, y1) { },
+	on_erase: function (x0, y0, x1, y1) { },
 	draw_background_info: function (extra_info) {
 		context.fillStyle = erase_style;
 		context.fillRect(0, 0, canvas.width, canvas.height);
@@ -133,12 +139,40 @@ const api = {
 		context.fillText("left mouse button: sketch", canvas.width * 0.5, canvas.height * 0.5 - 60);
 		context.fillText("other mouse buttons: eraser", canvas.width * 0.5, canvas.height * 0.5 - 20);
 		context.fillText("f5: clear", canvas.width * 0.5, canvas.height * 0.5 + 20);
-		//context.fillText("ctrl+z: undo once", canvas.width * 0.5, canvas.height * 0.5 + 60);
+		context.fillText("ctrl+z: undo", canvas.width * 0.5, canvas.height * 0.5 + 60);
 
 		context.fillText(extra_info, canvas.width * 0.5, canvas.height * 0.5 + 180);
 	},
-	on_draw: function (x0, y0, x1, y1) { },
-	on_erase: function (x0, y0, x1, y1) { },
+	finish_command: function () {
+		undo_stack.splice(current_undo_index);
+		add_undo_command(is_drawing, current_undo_lines);
+
+		console.log(undo_stack);
+	},
+	undo: function () {
+		if (current_undo_index < 0) {
+			return;
+		}
+
+		current_undo_index -= 1;
+
+		context.fillStyle = erase_style;
+		context.fillRect(0, 0, canvas.width, canvas.height);
+
+		for (i = 0; i <= current_undo_index; i++) {
+			c = undo_stack[i];
+			//console.log("undo command:", c);
+			if (c.is_drawing) {
+				for (l of c.lines) {
+					this.draw(l.x0, l.y0, l.x1, l.y1);
+				}
+			} else {
+				for (l of c.lines) {
+					this.erase(l.x0, l.y0, l.x1, l.y1);
+				}
+			}
+		}
+	}
 };
 
 api.draw_background_info("");
