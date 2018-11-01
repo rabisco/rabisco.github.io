@@ -132,3 +132,7 @@ const api = {
 };
 
 api.draw_background_info("");
+
+window.onhashchange = function () {
+	window.location.reload();
+}
