@@ -102,7 +102,7 @@ const api = {
 		context.strokeStyle = draw_style;
 		trace_line(x0, y0, x1, y1);
 
-		this.on_draw();
+		this.on_draw(x0, y0, x1, y1);
 	},
 	erase: function (x0, y0, x1, y1) {
 		if (!this.enabled) {
@@ -115,7 +115,7 @@ const api = {
 		context.strokeStyle = erase_style;
 		trace_line(x0, y0, x1, y1);
 
-		this.on_erase();
+		this.on_erase(x0, y0, x1, y1);
 	},
 	draw_background_info: function (extra_info) {
 		context.fillStyle = erase_style;
@@ -129,8 +129,8 @@ const api = {
 
 		context.fillText(extra_info, canvas.width * 0.5, canvas.height * 0.5 + 180);
 	},
-	on_draw: function () { },
-	on_erase: function () { },
+	on_draw: function (x0, y0, x1, y1) { },
+	on_erase: function (x0, y0, x1, y1) { },
 };
 
 api.draw_background_info("");

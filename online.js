@@ -1,9 +1,20 @@
 const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionProtocol.Ws, "61cc61f4-c5a6-4d2b-afeb-2afeb42c3162", "1.0");
 
-api.enabled = false;
-client.connectToRegionMaster("SA");
+const draw_event_code = 1;
+const erase_event_code = 2;
 
+api.enabled = false;
 api.draw_background_info("connection state: Offline");
+
+api.on_draw = function (x0, y0, x1, y1) {
+	client.raiseEvent(draw_event_code, { x0: x0, y0: y0, x1: x1, y1: y1 });
+}
+
+api.on_erase = function (x0, y0, x1, y1) {
+	client.raiseEvent(erase_event_code, { x0: x0, y0: y0, x1: x1, y1: y1 });
+}
+
+client.connectToRegionMaster("SA");
 
 client.onStateChange = function (state) {
 	let status = "connection state: ";
@@ -17,5 +28,15 @@ client.onStateChange = function (state) {
 	}
 }
 
-client.onJoinRoom = function () {
+client.onEvent = function (code, data, actor_nr) {
+	switch (code) {
+		case draw_event_code:
+			api.draw(data.x0, data.y0, data.x1, data.y1);
+			break;
+		case erase_event_code:
+			api.erase(data.x0, data.y0, data.x1, data.y1);
+			break;
+		default:
+			break;
+	}
 }
