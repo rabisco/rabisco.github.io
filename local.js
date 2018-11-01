@@ -4,8 +4,8 @@ const context = canvas.getContext("2d");
 const draw_style = "#888";
 const draw_width = 3.0;
 
-const clear_style = "#111";
-const clear_width = 50.0;
+const erase_style = "#111";
+const erase_width = 50.0;
 
 const font_style = "#444";
 
@@ -16,13 +16,14 @@ var prevY = 0.0;
 var currX = 0.0;
 var currY = 0.0;
 
-var drawing = false;
-var first_click = true;
+var is_pressing_mouse = false;
+var is_drawing = false;
+var is_first_action = true;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-context.fillStyle = clear_style;
+context.fillStyle = erase_style;
 context.fillRect(0, 0, canvas.width, canvas.height);
 context.lineJoin = "round";
 context.lineCap = "round";
@@ -34,7 +35,7 @@ context.fillText("left mouse button: sketch", canvas.width * 0.5, canvas.height 
 context.fillText("other mouse buttons: eraser", canvas.width * 0.5, canvas.height * 0.5 - 20);
 context.fillText("f5: clear", canvas.width * 0.5, canvas.height * 0.5 + 20);
 context.fillText("ctrl+z: undo once", canvas.width * 0.5, canvas.height * 0.5 + 60);
-context.fillStyle = clear_style;
+context.fillStyle = erase_style;
 
 canvas.addEventListener("mousemove", function (e) {
 	prevX = currX;
@@ -42,38 +43,32 @@ canvas.addEventListener("mousemove", function (e) {
 	currX = e.clientX - canvas.offsetLeft;
 	currY = e.clientY - canvas.offsetTop;
 
-	if (drawing) {
-		context.beginPath();
-		context.moveTo(prevX, prevY);
-		context.lineTo(currX, currY);
-		context.stroke();
-		context.closePath();
+	if (is_pressing_mouse) {
+		if (is_drawing) {
+			api.draw(prevX, prevY, currX, currY);
+		} else {
+			api.erase(prevX, prevY, currX, currY);
+		}
 	}
 }, false);
 canvas.addEventListener("mousedown", function (e) {
-	if (first_click) {
-		context.fillRect(0, 0, canvas.width, canvas.height);
-		first_click = false;
-	}
-
-	drawing = true;
+	is_pressing_mouse = true;
 	undo_buffer = canvas.toDataURL();
 
 	if (e.button == 0) {
-		context.lineWidth = draw_width;
-		context.strokeStyle = draw_style;
+		is_drawing = true;
 	} else {
-		context.lineWidth = clear_width;
-		context.strokeStyle = clear_style;
+		is_drawing = false;
 	}
 }, false);
 canvas.addEventListener("mouseup", function (e) {
-	drawing = false;
+	is_pressing_mouse = false;
 }, false);
 canvas.addEventListener("mouseout", function (e) {
-	drawing = false;
+	is_pressing_mouse = false;
 }, false);
 
+/*
 document.onkeydown = function (e) {
 	if (e.keyCode == 90 && e.ctrlKey) {
 		var data = canvas.toDataURL();
@@ -84,4 +79,43 @@ document.onkeydown = function (e) {
 
 		undo_buffer = data;
 	}
+};
+*/
+
+function trace_line(x0, y0, x1, y1) {
+	context.beginPath();
+	context.moveTo(x0, y0);
+	context.lineTo(x1, y1);
+	context.stroke();
+	context.closePath();
+}
+
+function clear_screen_if_first_action() {
+	if (is_first_action) {
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		is_first_action = false;
+	}
+}
+
+const api = {
+	draw: function (x0, y0, x1, y1) {
+		clear_screen_if_first_action();
+
+		context.lineWidth = draw_width;
+		context.strokeStyle = draw_style;
+		trace_line(x0, y0, x1, y1);
+
+		this.on_draw();
+	},
+	erase: function (x0, y0, x1, y1) {
+		clear_screen_if_first_action();
+
+		context.lineWidth = erase_width;
+		context.strokeStyle = erase_style;
+		trace_line(x0, y0, x1, y1);
+
+		this.on_erase();
+	},
+	on_draw: function () { },
+	on_erase: function () { },
 };
