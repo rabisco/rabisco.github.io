@@ -3,6 +3,12 @@ const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionPro
 const draw_event_code = 1;
 const erase_event_code = 2;
 
+if (window.location.hash.length > 1) {
+	api.enabled = false;
+	api.draw_background_info("connection state: Offline");
+	client.connectToRegionMaster("SA");
+}
+
 api.on_draw = function (x0, y0, x1, y1) {
 	client.raiseEvent(
 		draw_event_code,
@@ -17,14 +23,6 @@ api.on_erase = function (x0, y0, x1, y1) {
 		{ x0: x0, y0: y0, x1: x1, y1: y1 },
 		{ cache: Photon.LoadBalancing.Constants.EventCaching.AddToRoomCacheGlobal }
 	);
-}
-
-if (window.location.hash.length > 1) {
-	console.log("SUPER HASH");
-	
-	api.enabled = false;
-	api.draw_background_info("connection state: Offline 2");
-	client.connectToRegionMaster("SA");
 }
 
 client.onStateChange = function (state) {
