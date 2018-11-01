@@ -1,4 +1,4 @@
-const canvas = document.getElementById("the_canvas");
+const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 
 const draw_style = "#888";
