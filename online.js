@@ -9,22 +9,6 @@ if (window.location.hash.length > 1) {
 	client.connectToRegionMaster("SA");
 }
 
-api.on_draw = function (x0, y0, x1, y1) {
-	client.raiseEvent(
-		draw_event_code,
-		{ x0: x0, y0: y0, x1: x1, y1: y1 },
-		{ cache: Photon.LoadBalancing.Constants.EventCaching.AddToRoomCacheGlobal }
-	);
-}
-
-api.on_erase = function (x0, y0, x1, y1) {
-	client.raiseEvent(
-		erase_event_code,
-		{ x0: x0, y0: y0, x1: x1, y1: y1 },
-		{ cache: Photon.LoadBalancing.Constants.EventCaching.AddToRoomCacheGlobal }
-	);
-}
-
 client.onStateChange = function (state) {
 	let status = "connection state: ";
 	status += Photon.LoadBalancing.LoadBalancingClient.StateToName(state);
@@ -48,4 +32,20 @@ client.onEvent = function (code, data, actor_nr) {
 		default:
 			break;
 	}
+}
+
+api.on_draw = function (x0, y0, x1, y1) {
+	client.raiseEvent(
+		draw_event_code,
+		{ x0: x0, y0: y0, x1: x1, y1: y1 },
+		{ cache: Photon.LoadBalancing.Constants.EventCaching.AddToRoomCacheGlobal }
+	);
+}
+
+api.on_erase = function (x0, y0, x1, y1) {
+	client.raiseEvent(
+		erase_event_code,
+		{ x0: x0, y0: y0, x1: x1, y1: y1 },
+		{ cache: Photon.LoadBalancing.Constants.EventCaching.AddToRoomCacheGlobal }
+	);
 }
