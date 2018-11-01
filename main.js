@@ -55,11 +55,11 @@ canvas.addEventListener("mousedown", function (e) {
 }, false);
 canvas.addEventListener("mouseup", function (e) {
 	is_pressing_mouse = false;
-	undo_api.request_add_undo_command(is_drawing);
+	undo_api.request_add_undo_command(is_drawing ? command_type_draw : command_type_erase);
 }, false);
 canvas.addEventListener("mouseout", function (e) {
 	if (is_pressing_mouse)
-		undo_api.on_request_add_undo_command(is_drawing);
+		undo_api.request_add_undo_command(is_drawing ? command_type_draw : command_type_erase);
 	is_pressing_mouse = false;
 }, false);
 
@@ -71,6 +71,12 @@ document.onkeydown = function (e) {
 		} else {
 			undo_api.request_undo(-1);
 		}
+	}
+
+	// ESC
+	if (e.keyCode == 27) {
+		api.clear();
+		undo_api.request_add_undo_command(command_type_clear);
 	}
 };
 
@@ -119,7 +125,7 @@ const api = {
 		context.fillStyle = font_style;
 		context.fillText("left mouse button: sketch", canvas.width * 0.5, canvas.height * 0.5 - 60);
 		context.fillText("other mouse buttons: eraser", canvas.width * 0.5, canvas.height * 0.5 - 20);
-		context.fillText("f5: clear", canvas.width * 0.5, canvas.height * 0.5 + 20);
+		context.fillText("esc: clear", canvas.width * 0.5, canvas.height * 0.5 + 20);
 		context.fillText("ctrl+z: undo", canvas.width * 0.5, canvas.height * 0.5 + 60);
 		context.fillText("ctrl+shift+z: redo", canvas.width * 0.5, canvas.height * 0.5 + 100);
 
