@@ -69,7 +69,11 @@ canvas.addEventListener("mouseout", function (e) {
 
 document.onkeydown = function (e) {
 	if (e.keyCode == 90 && e.ctrlKey) {
-		api.undo();
+		if (e.shiftKey) {
+			api.redo();
+		} else {
+			api.undo();
+		}
 	}
 };
 
@@ -101,8 +105,24 @@ function add_undo_command(is_drawing) {
 	});
 	current_undo_index += 1;
 	current_undo_lines = [];
+}
 
-	console.log("undo index:", current_undo_index);
+function draw_undo_state_at(index) {
+	context.fillStyle = erase_style;
+	context.fillRect(0, 0, canvas.width, canvas.height);
+
+	for (i = 0; i <= index; i++) {
+		c = undo_stack[i];
+		if (c.is_drawing) {
+			for (l of c.lines) {
+				api.draw(l.x0, l.y0, l.x1, l.y1);
+			}
+		} else {
+			for (l of c.lines) {
+				api.erase(l.x0, l.y0, l.x1, l.y1);
+			}
+		}
+	}
 }
 
 const api = {
@@ -144,33 +164,19 @@ const api = {
 		context.fillText(extra_info, canvas.width * 0.5, canvas.height * 0.5 + 180);
 	},
 	finish_command: function () {
-		undo_stack.splice(current_undo_index);
+		undo_stack.splice(current_undo_index + 1);
 		add_undo_command(is_drawing, current_undo_lines);
-
-		console.log(undo_stack);
 	},
 	undo: function () {
-		if (current_undo_index < 0) {
-			return;
+		if (current_undo_index >= 0) {
+			current_undo_index -= 1;
+			draw_undo_state_at(current_undo_index);
 		}
-
-		current_undo_index -= 1;
-
-		context.fillStyle = erase_style;
-		context.fillRect(0, 0, canvas.width, canvas.height);
-
-		for (i = 0; i <= current_undo_index; i++) {
-			c = undo_stack[i];
-			//console.log("undo command:", c);
-			if (c.is_drawing) {
-				for (l of c.lines) {
-					this.draw(l.x0, l.y0, l.x1, l.y1);
-				}
-			} else {
-				for (l of c.lines) {
-					this.erase(l.x0, l.y0, l.x1, l.y1);
-				}
-			}
+	},
+	redo: function () {
+		if (current_undo_index < undo_stack.length - 1) {
+			current_undo_index += 1;
+			draw_undo_state_at(current_undo_index);
 		}
 	}
 };
