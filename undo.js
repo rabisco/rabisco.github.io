@@ -1,6 +1,6 @@
 const undo_stack = [];
-const current_undo_lines = {};
 let current_undo_index = -1;
+let local_undo_lines = [];
 
 const undo_api = {
 	request_undo: function (direction) {
@@ -33,20 +33,20 @@ const undo_api = {
 			}
 		}
 	},
-	add_undo_line: function (user_id, x0, y0, x1, y1) {
-		let lines = current_undo_lines[user_id] || [];
-		lines.push({ x0: x0, y0: y0, x1: x1, y1: y1 });
-		current_undo_lines[user_id] = lines;
+	add_local_undo_line: function (x0, y0, x1, y1) {
+		local_undo_lines.push({ x0: x0, y0: y0, x1: x1, y1: y1 });
 	},
-	add_undo_command: function (user_id, is_drawing) {
+	request_add_undo_command: function (user_id, is_drawing) {
+		this.perform_add_undo_command(user_id, is_drawing, local_undo_lines);
+		local_undo_lines = [];
+	},
+	perform_add_undo_command: function (user_id, is_drawing, lines) {
 		current_undo_index += 1;
 		undo_stack.splice(current_undo_index);
 
 		undo_stack.push({
 			is_drawing: is_drawing,
-			lines: current_undo_lines[user_id] || [],
+			lines: lines,
 		});
-
-		current_undo_lines[user_id] = [];
 	}
 }
