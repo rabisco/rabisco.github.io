@@ -1,3 +1,5 @@
+const version = "0.1";
+
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 
@@ -133,6 +135,8 @@ const api = {
 		context.fillText(window.location.hostname + "#roomname: collaborate online", canvas.width * 0.5, canvas.height * 0.5 + 100);
 
 		context.fillText(extra_info, canvas.width * 0.5, canvas.height - 100);
+
+		context.fillText(version, canvas.width - 40, canvas.height - 40);
 	}
 };
 
