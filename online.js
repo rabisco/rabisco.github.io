@@ -1,4 +1,4 @@
-const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionProtocol.Wss, "61cc61f4-c5a6-4d2b-afeb-2afeb42c3162", "1.0");
+const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionProtocol.Wss, "61cc61f4-c5a6-4d2b-afeb-2afeb42c3162", version);
 
 const event_code_clear = 1;
 const event_code_draw = 2;
