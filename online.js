@@ -14,7 +14,7 @@ client.onStateChange = function (state) {
 	api.enabled = state == Photon.LoadBalancing.LoadBalancingClient.State.Joined
 
 	if (client.isInLobby()) {
-		client.joinRoom(window.location.hash, { createIfNotExists: true }, {});
+		client.joinRoom(window.location.pathname, { createIfNotExists: true }, {});
 	}
 
 	if (api.enabled) {
@@ -44,7 +44,7 @@ client.onEvent = function (code, data, actor_nr) {
 	}
 }
 
-if (window.location.hash.length > 1) {
+function online_init() {
 	api.enabled = false;
 	api.draw_background_info("connection state: Offline");
 	client.connectToRegionMaster("SA");
@@ -90,3 +90,6 @@ if (window.location.hash.length > 1) {
 	}
 }
 
+window.onload = function () {
+	online_init();
+}
