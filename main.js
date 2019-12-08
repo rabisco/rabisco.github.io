@@ -1,4 +1,4 @@
-const version = "0.3";
+const version = "0.4";
 
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
@@ -16,7 +16,8 @@ let prev_y = 0.0;
 let curr_x = 0.0;
 let curr_y = 0.0;
 
-let canvas_state_before_write = new Image();
+const offscreen_canvas = document.createElement("canvas");
+const offscreen_context = offscreen_canvas.getContext("2d");
 let text_x = 0.0;
 let text_y = 0.0;
 let current_text = "";
@@ -129,9 +130,9 @@ function before_write() {
 	}
 
 	if (current_text === "") {
-		canvas_state_before_write.src = canvas.toDataURL();
+		offscreen_context.drawImage(canvas, 0, 0);
 	} else {
-		context.drawImage(canvas_state_before_write, 0, 0);
+		context.drawImage(offscreen_canvas, 0, 0);
 	}
 }
 
@@ -218,4 +219,13 @@ const api = {
 	}
 };
 
-api.draw_background_info("");
+function init() {
+	offscreen_canvas.width = canvas.width;
+	offscreen_canvas.height = canvas.height;
+
+	api.draw_background_info("");
+}
+
+window.onload = function () {
+	init();
+}

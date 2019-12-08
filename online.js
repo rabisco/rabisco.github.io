@@ -103,5 +103,6 @@ function online_init() {
 }
 
 window.onload = function () {
+	init();
 	online_init();
 }
