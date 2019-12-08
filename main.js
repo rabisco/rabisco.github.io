@@ -184,7 +184,7 @@ const api = {
 		}
 
 		context.textAlign = "center";
-		context.fillStyle = font_style;
+		context.fillStyle = draw_style;
 		context.fillText(text, x, y);
 	},
 	erase: function (x0, y0, x1, y1) {
