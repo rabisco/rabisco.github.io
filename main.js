@@ -1,4 +1,4 @@
-const version = "0.2";
+const version = "0.3";
 
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
@@ -15,6 +15,11 @@ let prev_x = 0.0;
 let prev_y = 0.0;
 let curr_x = 0.0;
 let curr_y = 0.0;
+
+let canvas_state_before_write = new Image();
+let text_x = 0.0;
+let text_y = 0.0;
+let current_text = "";
 
 let is_pressing_mouse = false;
 let is_drawing = false;
@@ -47,6 +52,7 @@ canvas.addEventListener("mousemove", function (e) {
 	}
 }, false);
 canvas.addEventListener("mousedown", function (e) {
+	end_write();
 	is_pressing_mouse = true;
 
 	if (e.button == 0) {
@@ -58,6 +64,8 @@ canvas.addEventListener("mousedown", function (e) {
 canvas.addEventListener("mouseup", function (e) {
 	is_pressing_mouse = false;
 	undo_api.request_add_undo_command(is_drawing ? command_type_draw : command_type_erase);
+	text_x = e.clientX;
+	text_y = e.clientY;
 }, false);
 canvas.addEventListener("mouseout", function (e) {
 	if (is_pressing_mouse)
@@ -68,20 +76,74 @@ canvas.addEventListener("mouseout", function (e) {
 document.onkeydown = function (e) {
 	// Z
 	if (e.keyCode == 90 && e.ctrlKey) {
+		end_write();
 		if (e.shiftKey) {
 			undo_api.request_undo(1);
 		} else {
 			undo_api.request_undo(-1);
 		}
 	}
-
 	// ESC
-	if (e.keyCode == 27) {
+	else if (e.keyCode == 27) {
+		end_write();
 		api.clear();
 		api.on_clear();
 		undo_api.request_add_undo_command(command_type_clear);
 	}
+	// Backspace
+	else if (e.keyCode == 8) {
+		before_write();
+		current_text = current_text.slice(0, -1);
+
+		api.write(text_x, text_y, current_text);
+		api.on_write(text_x, text_y, current_text);
+		undo_api.set_local_undo_text(text_x, text_y, current_text);
+	}
+	// Enter
+	else if (e.keyCode == 13) {
+		end_write();
+	}
+	// Skip
+	else if (
+		e.keyCode == 37 || // Left
+		e.keyCode == 38 || // Up
+		e.keyCode == 39 || // Right
+		e.keyCode == 40 || // Down
+		e.keyCode == 46 || // Delete
+		e.keyCode == 0
+	) {
+	}
+	// Write
+	else if (!e.ctrlKey && !e.altKey && !e.metaKey) {
+		before_write();
+		current_text += e.key;
+
+		api.write(text_x, text_y, current_text);
+		undo_api.set_local_undo_text(text_x, text_y, current_text);
+	}
 };
+
+function before_write() {
+	if (is_first_action) {
+		api.clear();
+	}
+
+	if (current_text === "") {
+		canvas_state_before_write.src = canvas.toDataURL();
+	} else {
+		context.drawImage(canvas_state_before_write, 0, 0);
+	}
+}
+
+function end_write() {
+	if (current_text === "") {
+		return;
+	}
+
+	api.on_write(text_x, text_y, current_text);
+	undo_api.request_add_undo_command(command_type_write);
+	current_text = "";
+}
 
 function trace_line(x0, y0, x1, y1) {
 	context.beginPath();
@@ -111,6 +173,20 @@ const api = {
 		context.strokeStyle = draw_style;
 		trace_line(x0, y0, x1, y1);
 	},
+	write: function (x, y, text) {
+		if (!this.enabled) {
+			return;
+		}
+
+		if (is_first_action) {
+			this.clear();
+			is_first_action = false;
+		}
+
+		context.textAlign = "center";
+		context.fillStyle = font_style;
+		context.fillText(text, x, y);
+	},
 	erase: function (x0, y0, x1, y1) {
 		if (!this.enabled) {
 			return;
@@ -121,11 +197,13 @@ const api = {
 		trace_line(x0, y0, x1, y1);
 	},
 	on_clear: function () { },
-	on_draw: function (x0, y0, x1, y1) { },
-	on_erase: function (x0, y0, x1, y1) { },
+	on_draw: function (_x0, _y0, _x1, _y1) { },
+	on_write: function (_x, _y, _text) { },
+	on_erase: function (_x0, _y0, _x1, _y1) { },
 	draw_background_info: function (extra_info) {
 		this.clear();
 
+		context.textAlign = "center";
 		context.fillStyle = font_style;
 		context.fillText("left mouse button: sketch", canvas.width * 0.5, canvas.height * 0.5 - 100);
 		context.fillText("other mouse buttons: eraser", canvas.width * 0.5, canvas.height * 0.5 - 60);
@@ -141,7 +219,3 @@ const api = {
 };
 
 api.draw_background_info("");
-
-window.onhashchange = function () {
-	window.location.reload();
-}

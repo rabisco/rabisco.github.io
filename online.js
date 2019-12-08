@@ -2,9 +2,10 @@ const client = new Photon.LoadBalancing.LoadBalancingClient(Photon.ConnectionPro
 
 const event_code_clear = 1;
 const event_code_draw = 2;
-const event_code_erase = 3;
-const event_code_perform_undo = 4;
-const event_code_add_undo_command = 5;
+const event_code_write = 3;
+const event_code_erase = 4;
+const event_code_perform_undo = 5;
+const event_code_add_undo_command = 6;
 
 client.onStateChange = function (state) {
 	let status = "connection state: ";
@@ -22,13 +23,16 @@ client.onStateChange = function (state) {
 	}
 }
 
-client.onEvent = function (code, data, actor_nr) {
+client.onEvent = function (code, data, _actor_nr) {
 	switch (code) {
 		case event_code_clear:
 			api.clear();
 			break;
 		case event_code_draw:
 			api.draw(data.x0, data.y0, data.x1, data.y1);
+			break;
+		case event_code_write:
+			api.write(data.x, data.y, data.text);
 			break;
 		case event_code_erase:
 			api.erase(data.x0, data.y0, data.x1, data.y1);
@@ -37,7 +41,7 @@ client.onEvent = function (code, data, actor_nr) {
 			undo_api.perform_undo(data);
 			break;
 		case event_code_add_undo_command:
-			undo_api.perform_add_undo_command(data.command_type, data.lines);
+			undo_api.perform_add_undo_command(data.command_type, data.lines, data.text);
 			break;
 		default:
 			break;
@@ -65,6 +69,14 @@ function online_init() {
 		);
 	}
 
+	api.on_write = function (x, y, text) {
+		client.raiseEvent(
+			event_code_write,
+			{ x: x, y: y, text: text },
+			{ cache: Photon.LoadBalancing.Constants.EventCaching.AddToRoomCacheGlobal }
+		);
+	}
+
 	api.on_erase = function (x0, y0, x1, y1) {
 		client.raiseEvent(
 			event_code_erase,
@@ -81,10 +93,10 @@ function online_init() {
 		);
 	}
 
-	undo_api.on_request_add_undo_command = function (command_type, lines) {
+	undo_api.on_request_add_undo_command = function (command_type, lines, text) {
 		client.raiseEvent(
 			event_code_add_undo_command,
-			{ command_type: command_type, lines: lines },
+			{ command_type: command_type, lines: lines, text: text },
 			{ receivers: Photon.LoadBalancing.Constants.ReceiverGroup.All, cache: Photon.LoadBalancing.Constants.EventCaching.AddToRoomCacheGlobal }
 		);
 	}
