@@ -121,7 +121,11 @@ document.onkeydown = function (e) {
 
 		api.write(text_x, text_y, current_text);
 		undo_api.set_local_undo_text(text_x, text_y, current_text);
+	} else {
+		return;
 	}
+	
+	e.preventDefault();
 };
 
 function before_write() {
