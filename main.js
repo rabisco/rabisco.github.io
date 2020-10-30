@@ -188,7 +188,7 @@ const api = {
 			is_first_action = false;
 		}
 
-		context.textAlign = "center";
+		context.textAlign = "left";
 		context.fillStyle = draw_style;
 		context.fillText(text, x, y);
 	},
